@@ -85,6 +85,12 @@
 
 				value = jQuery.trim(value);
 
+        var label = value;
+
+        if (options.label) {
+          label = options.label;
+        }
+
 				if (options.unique) {
 					var skipTag = $(this).tagExist(value);
 					if(skipTag == true) {
@@ -97,7 +103,7 @@
 
 				if (value !='' && skipTag != true) {
                     $('<span>').addClass('tag').append(
-                        $('<span>').text(value).append('&nbsp;&nbsp;'),
+                        $('<span>').text(label).append('&nbsp;&nbsp;'),
                         $('<a>', {
                             href  : '#',
                             title : 'Removing tag',
