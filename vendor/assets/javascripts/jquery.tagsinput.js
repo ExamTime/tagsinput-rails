@@ -103,7 +103,7 @@
 
         if (value !='' && skipTag != true) {
                     $('<span>').addClass('tag').append(
-                        $('<span>').text(label).append('&nbsp;&nbsp;'),
+                        $('<span>').attr('value', value).text(label).append('&nbsp;&nbsp;'),
                         $('<a>', {
                             href  : '#',
                             title : 'Removing tag',
@@ -144,19 +144,25 @@
   $.fn.removeTag = function(value) {
       value = unescape(value);
       this.each(function() {
-        var id = $(this).attr('id');
+        var id = $(this).attr('id'),
+            tags = [],
+            $tag_els = $('#'+id+'_tagsinput .tag span');
 
-        var old = $(this).val().split(delimiter[id]);
+        // build array of tags
+        $.each($tag_els, function(index,el) {
+          var this_value = $(el).attr('value');
+          if (this_value !== value) {
+            tag_obj = {
+              value: $(el).attr('value'),
+              label: $.trim($(el).text())
+            };
+            tags.push(tag_obj);
+          }
+        });
 
         $('#'+id+'_tagsinput .tag').remove();
-        str = '';
-        for (i=0; i< old.length; i++) {
-          if (old[i]!=value) {
-            str = str + delimiter[id] +old[i];
-          }
-        }
 
-        $.fn.tagsInput.importTags(this,str);
+        $.fn.tagsInput.importTags(this,tags);
 
         if (tags_callbacks[id] && tags_callbacks[id]['onRemoveTag']) {
           var f = tags_callbacks[id]['onRemoveTag'];
@@ -178,7 +184,7 @@
                 id = $(this).attr('id');
     $('#'+id+'_tagsinput .tag').remove();
     $.fn.tagsInput.importTags(this,str);
-  }
+  };
 
   $.fn.tagsInput = function(options) {
     var settings = jQuery.extend({
@@ -351,12 +357,26 @@
   };
 
   $.fn.tagsInput.importTags = function(obj,val) {
+
     $(obj).val('');
-    var id = $(obj).attr('id');
-    var tags = val.split(delimiter[id]);
-    for (i=0; i<tags.length; i++) {
-      $(obj).addTag(tags[i],{focus:false,callback:false});
+
+    var id = $(obj).attr('id'),
+        tags = [];
+
+    if (typeof val === "string") {
+      var tags_str = val.split(delimiter[id]);
+      for (i=0; i<tags_str.length; i++) {
+        tags.push({ value: tags_str[i], label: tags_str[i] });
+      }
     }
+    else {
+      tags = val;
+    }
+
+    for (i=0; i<tags.length; i++) {
+      $(obj).addTag(tags[i].value,{focus:false,callback:false, label: tags[i].label });
+    }
+
     if(tags_callbacks[id] && tags_callbacks[id]['onChange'])
     {
       var f = tags_callbacks[id]['onChange'];
