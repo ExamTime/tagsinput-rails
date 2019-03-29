@@ -20,6 +20,6 @@ Gem::Specification.new do |spec|
   spec.require_paths = ['lib']
 
   spec.add_dependency "railties", ">= 3.1", "< 6.0"
-  spec.add_development_dependency 'bundler', '~= 1.3'
+  spec.add_development_dependency 'bundler', '~> 1.3'
   spec.add_development_dependency 'rake'
 end
